@@ -1,15 +1,7 @@
 # Import libraries here later when you need them
-import matplotlib
 import pandas as pd
-$pip install -U scikit-learn
-
-LeagueofLegends.csv
-_Columns.csv
-_LeagueofLegends.csv
-banValues.csv
-deathValues.csv
-goldValues.csv
-objValues.csv
+import numpy as np
+import matplotlib as plt
 
 # Data info
 df_columns = pd.read_csv('../input/_Columns.csv',sep=',')
