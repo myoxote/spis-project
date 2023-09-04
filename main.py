@@ -1,21 +1,51 @@
-# Import libraries here later when you need them
-import pandas as pd
+#import
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
+%matplotlib inline
+np.random.seed(2)
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from keras.utils.np_utils import to_categorical
+from keras.models import Sequential
+from keras.layers import Dense, Flatten, Conv2D, MaxPool2D, Dropout
+from keras.optimizers import Adam
+from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import EarlyStopping
 
-# Data info
-df_columns = pd.read_csv('../input/_Columns.csv',sep=',')
-df_raw = pd.read_csv('../input/_LeagueofLegends.csv',sep=',')
-df_raw.info()
+from PIL import Image, ImageChops, ImageEnhance
+import os
+import itertools
 
-# Instead of just being a "number runner", the machine should be able to weigh situations based not on just the numbers, 
-# but on events that have taken place in the game also. ex. Training the machine: winrate of team A and team B are both 50/50, 
-# but I have told the machine that team A has gotten X objectives and has won. The machine should not just look at a winrate of 
-# 80/20 and say that the team with 80% winrate will win, but look at the objectives/champions played and guess also.
-# Will use professional games as examples as well as training, as well as my own personal games. I might even run the program while I'm playing
-# to see if it works on the fly.
+def convert_to_ela_image(path, quality):
+    temp_filename = 'temp_file_name.jpg'
+    ela_filename = 'temp_ela.png'
+    
+    image = Image.open(path).convert('RGB')
+    image.save(temp_filename, 'JPEG', quality = quality)
+    temp_image = Image.open(temp_filename)
+    
+    ela_image = ImageChops.difference(image, temp_image)
+    
+    extrema = ela_image.getextrema()
+    max_diff = max([ex[1] for ex in extrema])
+    if max_diff == 0:
+        max_diff = 1
+    scale = 255.0 / max_diff
+    
+    ela_image = ImageEnhance.Brightness(ela_image).enhance(scale)
+    
+    return ela_image
 
-# Removed calculator, because winrates are not going to mean anything.
-# I realized that what will be more telling of the machine's capabilities as a guesser will be its ability to extract conclusions from data that
-# isn't just winrate.
+#real image
+real_image_path = '/kaggle/input/casia-dataset/casia/CASIA2/Au/Au_ani_00001.jpg'
+Image.open(real_image_path)
 
+convert_to_ela_image(real_image_path, 90)
+
+#fake image
+fake_image_path = '/kaggle/input/casia-dataset/casia/CASIA2/Tp/Tp_D_NRN_S_N_ani10171_ani00001_12458.jpg'
+Image.open(fake_image_path)
+
+convert_to_ela_image(fake_image_path, 90)
+
+image_size = (128, 128)
