@@ -1,40 +1,52 @@
-#import
 import numpy as np
+import keras.datasets as keras_data
+
+# load the dataset from keras.dataset and directly split the tuples into seperated variables
+
+(fashion_train_data,fashion_train_labels),(fashion_test_data,fashion_test_labels)=keras_data.fashion_mnist.load_data()
+print(fashion_train_data.shape)
 import matplotlib.pyplot as plt
-from PIL import Image, ImageChops, ImageEnhance
-import os
-import itertools
 
-def convert_to_ela_image(path, quality):
-    temp_filename = 'temp_file_name.jpg'
-    ela_filename = 'temp_ela.png'
-    
-    image = Image.open(path).convert('RGB')
-    image.save(temp_filename, 'JPEG', quality = quality)
-    temp_image = Image.open(temp_filename)
-    
-    ela_image = ImageChops.difference(image, temp_image)
-    
-    extrema = ela_image.getextrema()
-    max_diff = max([ex[1] for ex in extrema])
-    if max_diff == 0:
-        max_diff = 1
-    scale = 255.0 / max_diff
-    
-    ela_image = ImageEnhance.Brightness(ela_image).enhance(scale)
-    
-    return ela_image
+plt.imshow(fashion_train_data[6],cmap=plt.cm.binary)
+plt.show()
 
-#real image
-real_image_path = '/kaggle/input/casia-dataset/casia/CASIA2/Au/Au_ani_00001.jpg'
-Image.open(real_image_path)
+x_train=fashion_train_data.reshape((60000,28*28))
+x_test=fashion_test_data.reshape((10000,28*28))
 
-convert_to_ela_image(real_image_path, 90)
+y_train=fashion_train_labels.copy()
+y_train[y_train==0]=0
+y_train[y_train==1]=0
+y_train[y_train==2]=0
+y_train[y_train==3]=0
+y_train[y_train==4]=0
+y_train[y_train==5]=1
+y_train[y_train==6]=0
+y_train[y_train==7]=1
+y_train[y_train==8]=0
+y_train[y_train==9]=1
 
-#fake image
-fake_image_path = '/kaggle/input/casia-dataset/casia/CASIA2/Tp/Tp_D_NRN_S_N_ani10171_ani00001_12458.jpg'
-Image.open(fake_image_path)
+y_test=fashion_test_labels.copy()
+y_test[y_test==0]=0
+y_test[y_test==1]=0
+y_test[y_test==2]=0
+y_test[y_test==3]=0
+y_test[y_test==4]=0
+y_test[y_test==5]=1
+y_test[y_test==6]=0
+y_test[y_test==7]=1
+y_test[y_test==8]=0
+y_test[y_test==9]=1
 
-convert_to_ela_image(fake_image_path, 90)
 
-image_size = (128, 128)
+print(x_train.shape)
+print(x_test.shape)
+
+%%time
+
+from sklearn.naive_bayes import MultinomialNB
+
+mnb = MultinomialNB().fit(x_train, y_train)
+
+print("train shape: " + str(x_train.shape))
+print("score on test: " + str(mnb.score(x_test, y_test)))
+print("score on train: "+ str(mnb.score(x_train, y_train)))
