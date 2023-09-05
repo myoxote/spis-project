@@ -1,17 +1,6 @@
 #import
 import numpy as np
 import matplotlib.pyplot as plt
-%matplotlib inline
-np.random.seed(2)
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from keras.utils.np_utils import to_categorical
-from keras.models import Sequential
-from keras.layers import Dense, Flatten, Conv2D, MaxPool2D, Dropout
-from keras.optimizers import Adam
-from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping
-
 from PIL import Image, ImageChops, ImageEnhance
 import os
 import itertools
